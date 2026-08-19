@@ -1,0 +1,27 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const site = (await getEntry('settings', 'site')).data;
+const about = (await getEntry('about', 'about')).data;
+---
+
+<BaseLayout title={`${about.heading} - ${site.name}`}>
+  <main id="main-content">
+    <section class="section section--short section--about">
+      <div class="section__container">
+        <nav class="about__nav">
+          <a href="/" class="about__back">&larr; Back to home</a>
+        </nav>
+
+        <header class="about__header">
+          <h1 class="hero__name">{about.heading}</h1>
+        </header>
+
+        <article class="about__content">
+          {about.body.map((p) => <p set:html={p} />)}
+        </article>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,31 @@
+{
+  "name": "Debasis Nishank",
+  "tagline": "Founder & Full-Stack Developer",
+  "bio": "These days, I'm building <a href=\"https://threemates.tech\" target=\"_blank\" rel=\"noopener noreferrer\">Threemates</a>, a software studio designing ERP systems, SaaS platforms, and web &amp; mobile apps for growing businesses. Alongside it, I lead backend engineering at Rabinnson, working across Java, Spring, React, and PostgreSQL.",
+  "metaDescription": "Debasis Nishank — founder of Threemates and a backend & full-stack developer building ERP systems, SaaS platforms, and multi-tenant services with Java, Spring, and React.",
+  "socials": {
+    "cv": "/resume.docx",
+    "orcid": "",
+    "github": "https://github.com/devnsk",
+    "linkedin": "https://linkedin.com/in/debasis-nishank-b47a00230",
+    "twitter": "",
+    "youtube": "https://www.youtube.com/@nishankmoto",
+    "instagram": "https://www.instagram.com/nsk.rides",
+    "telegram": "https://t.me/nskdev",
+    "email": "nishankdebasis4@gmail.com",
+    "emailWork": "debasis@threemates.tech"
+  },
+  "footer": {
+    "contactHeading": "Let's connect",
+    "contactText": "I'm always interested in backend and full-stack roles, freelance projects, or collaborating on something ambitious.",
+    "email": "nishankdebasis4@gmail.com",
+    "emailWork": "debasis@threemates.tech",
+    "timeline": [
+      { "role": "Founder", "org": "Threemates", "time": "2025 - Present" },
+      { "role": "Team Lead", "org": "Rabinnson Private Limited", "time": "2025 - Present" },
+      { "role": "Full-Stack Developer, Edu-SaaS", "org": "Thinkerscave", "time": "Jun 2025 - Oct 2025" },
+      { "role": "B.Tech, Computer Science (CGPA 9.1)", "org": "Centurion University of Technology and Management", "time": "2021 - 2025" }
+    ],
+    "freetimeNote": "Outside of work, I build side projects, explore new frameworks, and keep up with the Java and cloud ecosystem."
+  }
+}

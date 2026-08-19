@@ -1,0 +1,11 @@
+{
+  "now": [
+    "I'm building <a href=\"https://threemates.tech\" target=\"_blank\" rel=\"noopener noreferrer\">Threemates</a>, a software development studio based in Bhubaneswar. We design ERP systems, SaaS platforms, and web & mobile applications that help businesses digitize their operations and scale efficiently.",
+    "Alongside Threemates, I lead backend engineering at Rabinnson — multi-tenant Spring Boot microservices on PostgreSQL with role-based access control and audit logging across multiple legal entities.",
+    "On the frontend, I build React dashboards with real-time data visualization and export for compliance workflows, and I've integrated payment gateways and identity-verification APIs behind a Dockerized CI/CD pipeline."
+  ],
+  "research": {
+    "items": [],
+    "publications": []
+  }
+}

@@ -1,0 +1,115 @@
+---
+import { getEntry } from 'astro:content';
+
+export interface Props {
+  title: string;
+  description?: string;
+  bodyId?: string;
+  /** Load KaTeX CSS/JS (project detail pages with math). */
+  katex?: boolean;
+  /** Load the creative-page interaction script. */
+  creativeJs?: boolean;
+}
+
+const { title, description, bodyId = 'homepage', katex = false, creativeJs = false } = Astro.props;
+const site = await getEntry('settings', 'site');
+const metaDescription = description ?? site.data.metaDescription;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+
+  <title>{title}</title>
+
+  <script is:inline type="module">
+    document.documentElement.classList.remove('no-js');
+    document.documentElement.classList.add('js');
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/resets.css" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <link rel="preload" href="/assets/fonts/Reforma1918-GrisItalica.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="/assets/fonts/Reforma1969-Blanca.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="/assets/css/print.css" media="print" />
+
+  {katex && (
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  )}
+
+  <meta name="description" content={metaDescription} />
+
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={metaDescription} />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#003153" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#FFEFD5" media="(prefers-color-scheme: light)" />
+
+  <!-- Scroll-reveal: initial hidden state (only when JS is on and motion is allowed).
+       Keep this selector list in sync with SEL in /assets/js/reveal.js. -->
+  <style is:global>
+    @media (prefers-reduced-motion: no-preference) {
+      html.js :is(
+        .hero__content, .section__header, .now__main, .research__item,
+        .research__publications, .project-card, .moto-intro, .moto-card,
+        .moto-links, .cv-timeline__item, .about__content > p,
+        .project-content > *, .project-hero__header
+      ) {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      html.js :is(
+        .hero__content, .section__header, .now__main, .research__item,
+        .research__publications, .project-card, .moto-intro, .moto-card,
+        .moto-links, .cv-timeline__item, .about__content > p,
+        .project-content > *, .project-hero__header
+      ).is-visible {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body id={bodyId}>
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Theme Toggle -->
+  <div class="checkbox">
+    <input type="checkbox" id="checkbox_t" />
+    <label for="checkbox_t" class="label">
+      <ion-icon name="sunny" id="sun"></ion-icon>
+      <ion-icon name="moon" id="moon"></ion-icon>
+      <div class="ball"></div>
+    </label>
+  </div>
+
+  <slot />
+
+  <!-- Scripts -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script is:inline nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1/dist/lenis.min.js"></script>
+  <script is:inline src="/assets/js/smooth-scroll.js"></script>
+  {creativeJs && <script is:inline src="/assets/js/creative.js"></script>}
+  <script is:inline src="/assets/js/script.js" type="module"></script>
+  <script is:inline src="/assets/js/reveal.js"></script>
+  {katex && (
+    <script is:inline defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  )}
+</body>
+</html>

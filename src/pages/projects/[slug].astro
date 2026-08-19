@@ -1,0 +1,63 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', (p) => p.data.hasDetailPage);
+  return projects.map((project) => ({
+    params: { slug: project.id.replace(/\.md$/, '') },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const p = project.data;
+const site = (await getEntry('settings', 'site')).data;
+const { Content } = await render(project);
+
+// Show math styling only when the body uses it.
+const needsKatex = /\$\$?[^$]+\$\$?/.test(project.body ?? '');
+---
+
+<BaseLayout
+  title={`${p.detailTitle ?? p.title} - ${site.name}`}
+  description={p.lede?.[0] ?? p.cardDescription}
+  katex={needsKatex}
+>
+  <main id="main-content">
+    <!-- Hero -->
+    <section class="section section--project-hero">
+      <div class="section__container">
+        <nav class="about__nav">
+          <a href="/" class="about__back">&larr; Back to home</a>
+        </nav>
+
+        <header class="project-hero__header">
+          <h1 class="hero__name">{p.detailTitle ?? p.title}</h1>
+          {p.meta && <p class="project-hero__meta" set:html={p.meta} />}
+        </header>
+      </div>
+
+      {p.heroImage && (
+        <figure class="project-hero__figure">
+          <img src={p.heroImage} alt={p.detailTitle ?? p.title} class="project-hero__img" />
+          {p.heroCaption && <figcaption class="project-hero__caption">{p.heroCaption}</figcaption>}
+        </figure>
+      )}
+    </section>
+
+    <!-- Content -->
+    <section class="section section--short section--project-content">
+      <div class="section__container">
+        <article class="project-content">
+          {p.lede && p.lede.length > 0 && (
+            <div class="project-content__lede">
+              {p.lede.map((para) => <p>{para}</p>)}
+            </div>
+          )}
+          <Content />
+        </article>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

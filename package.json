@@ -1,0 +1,21 @@
+{
+  "name": "debasisnishank-portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "cms-proxy": "decap-server"
+  },
+  "dependencies": {
+    "astro": "^4.16.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
+  },
+  "devDependencies": {
+    "decap-server": "^3.1.0"
+  }
+}

@@ -1,0 +1,409 @@
+---
+import { getEntry, getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const site = (await getEntry('settings', 'site')).data;
+const home = (await getEntry('home', 'home')).data;
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const s = site.socials;
+const hasResearch = home.research.items.length > 0 || home.research.publications.length > 0;
+
+// --- Recent repos from GitHub, fetched at build time (baked into the HTML) ---
+const GH_USERS = ['debasisnishank', 'devnsk'];
+const GH_EXCLUDE = ['debasisnishank.github.io']; // don't list this site itself
+
+async function fetchRecentRepos(users, exclude) {
+  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'astro-build' };
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  const all = [];
+  for (const u of users) {
+    try {
+      const res = await fetch(`https://api.github.com/users/${u}/repos?sort=pushed&per_page=100&type=owner`, { headers });
+      if (!res.ok) continue;
+      const repos = await res.json();
+      for (const r of repos) {
+        if (r.fork || exclude.includes(r.name.toLowerCase())) continue;
+        all.push({
+          name: r.name,
+          title: r.name.replace(/[-_]+/g, ' ').trim(),
+          description: r.description,
+          language: r.language,
+          stars: r.stargazers_count,
+          url: r.html_url,
+          pushed: r.pushed_at,
+          owner: u,
+        });
+      }
+    } catch { /* offline / rate-limited — section just hides */ }
+  }
+  all.sort((a, b) => (a.pushed < b.pushed ? 1 : -1));
+  return all;
+}
+
+const ghRepos = (await fetchRecentRepos(GH_USERS, GH_EXCLUDE)).slice(0, 6);
+const hasGithub = ghRepos.length > 0;
+const fmtMonth = (iso) => new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+// --- Latest YouTube uploads (Nishank Moto), via the channel's public RSS feed ---
+const YT_CHANNEL_ID = 'UCqRDpmpoGYUOWS-qP88xWpA';
+
+function decodeEntities(str) {
+  return str
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n));
+}
+
+async function fetchYouTube(channelId, limit) {
+  try {
+    const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, {
+      headers: { 'User-Agent': 'astro-build' },
+    });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    return xml.split('<entry>').slice(1).map((e) => {
+      const id = (e.match(/<yt:videoId>([^<]*)<\/yt:videoId>/) || [])[1];
+      const rawTitle = decodeEntities((e.match(/<title>([^<]*)<\/title>/) || [])[1] || '');
+      const clean = rawTitle.replace(/#\S+/g, '').replace(/\s+/g, ' ').trim();
+      const published = (e.match(/<published>([^<]*)<\/published>/) || [])[1];
+      return id ? { id, title: clean || rawTitle, published, thumb: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` } : null;
+    }).filter(Boolean).slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
+const ytVideos = await fetchYouTube(YT_CHANNEL_ID, 3);
+const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
+---
+
+<BaseLayout title={`${site.name} - Personal Portfolio`}>
+  <main id="main-content">
+    <!-- HERO Section -->
+    <section id="hero" class="section section--hero">
+      <div class="section__container">
+        <div class="hero__content">
+          <h1 class="hero__name">{site.name}</h1>
+          <p class="hero__tagline">{site.tagline}</p>
+          <p class="hero__bio" set:html={site.bio} />
+          <a href="/about" class="hero__about-link">Read more &rarr;</a>
+          <nav class="hero__nav" aria-label="Page sections">
+            <a href="#now">Now</a>
+            {hasResearch && <a href="#research">Research</a>}
+            <a href="#projects">Projects</a>
+            {hasGithub && <a href="#github">Code</a>}
+            {hasMoto && <a href="#moto">Moto</a>}
+          </nav>
+          <div class="hero__socials">
+            {s.cv && <a href={s.cv} target="_blank" title="CV"><i class="fas fa-file-pdf"></i></a>}
+            {s.orcid && <a href={s.orcid} target="_blank" title="ORCID"><i class="fab fa-orcid"></i></a>}
+            {s.github && <a href={s.github} target="_blank" title="GitHub"><i class="fab fa-github"></i></a>}
+            {s.linkedin && <a href={s.linkedin} target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>}
+            {s.twitter && <a href={s.twitter} target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>}
+            {s.youtube && <a href={s.youtube} target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>}
+            {s.instagram && <a href={s.instagram} target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>}
+            {s.telegram && <a href={s.telegram} target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>}
+            {s.email && <a href={`mailto:${s.email}`} title="Email"><i class="fas fa-envelope"></i></a>}
+            {s.emailWork && <a href={`mailto:${s.emailWork}`} title="Threemates email"><i class="fas fa-briefcase"></i></a>}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOW Section -->
+    <section id="now" class="section section--now section--short">
+      <div class="section__container">
+        <h2 class="section__header">Now</h2>
+        <div class="now__grid">
+          <div class="now__main">
+            {home.now.map((p) => <p set:html={p} />)}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESEARCH Section -->
+    {hasResearch && (
+    <section id="research" class="section section--research section--short">
+      <div class="section__container">
+        <h2 class="section__header">Research</h2>
+        <div class="research__content">
+          {home.research.items.map((item) => (
+            <div class="research__item">
+              <h3 class="research__title">{item.title}</h3>
+              <p class="research__meta" set:html={item.meta} />
+              {item.description.map((d) => <p class="research__description">{d}</p>)}
+            </div>
+          ))}
+
+          {home.research.publications.length > 0 && (
+            <div class="research__publications">
+              <h3>Publications</h3>
+              {home.research.publications.map((pub) => (
+                <div class="publication">
+                  {pub.url ? (
+                    <a href={pub.url} target="_blank" rel="noopener noreferrer">
+                      <p class="publication__title">{pub.title}</p>
+                    </a>
+                  ) : (
+                    <p class="publication__title">{pub.title}</p>
+                  )}
+                  <p class="publication__venue">{pub.venue}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+    )}
+
+    <!-- PROJECTS Section -->
+    <section id="projects" class="section section--projects section--short">
+      <div class="section__container">
+        <h2 class="section__header">Projects</h2>
+        <div class="projects__grid">
+          {projects.map((project) => {
+            const p = project.data;
+            return (
+              <article class="project-card" tabindex="0">
+                <h3 class="project-card__title">{p.title}</h3>
+                <div class="project-card__tags">
+                  {p.tags.map((tag) => <span class="project-card__tag">{tag}</span>)}
+                </div>
+                <p class="project-card__description">{p.cardDescription}</p>
+                {p.cardContext && <p class="project-card__context">{p.cardContext}</p>}
+                {p.cardLink && (
+                  <a
+                    href={p.cardLink.url}
+                    class="project-card__link"
+                    {...(p.cardLink.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
+                    {p.cardLink.label} <i class={p.cardLink.icon ?? 'fas fa-arrow-right'}></i>
+                  </a>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT ON GITHUB Section -->
+    {hasGithub && (
+    <section id="github" class="section section--projects section--short">
+      <div class="section__container">
+        <h2 class="section__header">Recent on GitHub</h2>
+        <div class="projects__grid">
+          {ghRepos.map((repo) => (
+            <article class="project-card" tabindex="0">
+              <h3 class="project-card__title">{repo.title}</h3>
+              <div class="project-card__tags">
+                {repo.language && <span class="project-card__tag">{repo.language}</span>}
+                <span class="project-card__tag">@{repo.owner}</span>
+                {repo.stars > 0 && <span class="project-card__tag">★ {repo.stars}</span>}
+              </div>
+              {repo.description && <p class="project-card__description">{repo.description}</p>}
+              <p class="project-card__context">Updated {fmtMonth(repo.pushed)}</p>
+              <a href={repo.url} class="project-card__link" target="_blank" rel="noopener noreferrer">
+                View code <i class="fab fa-github"></i>
+              </a>
+            </article>
+          ))}
+        </div>
+        <p class="github-more">
+          <a href={s.github ?? `https://github.com/${GH_USERS[0]}`} target="_blank" rel="noopener noreferrer">
+            See all repositories &rarr;
+          </a>
+        </p>
+      </div>
+    </section>
+    )}
+
+    <!-- OFF THE CLOCK (moto vlogs) Section -->
+    {hasMoto && (
+    <section id="moto" class="section section--short">
+      <div class="section__container">
+        <h2 class="section__header">Off the Clock</h2>
+        <p class="moto-intro">When I'm not writing code, I'm on the bike — filming rides and moto vlogs as <strong>Nishank Moto</strong>.</p>
+
+        {ytVideos.length > 0 && (
+          <div class="moto-grid">
+            {ytVideos.map((v) => (
+              <a class="moto-card" href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer">
+                <figure class="moto-card__thumb">
+                  <img src={v.thumb} alt={v.title} loading="lazy" />
+                  <span class="moto-card__play"><i class="fas fa-play"></i></span>
+                </figure>
+                <div class="moto-card__body">
+                  <p class="moto-card__title">{v.title}</p>
+                  <p class="moto-card__date">{fmtMonth(v.published)}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div class="moto-links">
+          {s.youtube && (
+            <a href={s.youtube} target="_blank" rel="noopener noreferrer" class="moto-link">
+              <i class="fab fa-youtube"></i> Nishank Moto on YouTube &rarr;
+            </a>
+          )}
+          {s.instagram && (
+            <a href={s.instagram} target="_blank" rel="noopener noreferrer" class="moto-link">
+              <i class="fab fa-instagram"></i> @nsk.rides on Instagram &rarr;
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+    )}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer__container">
+      <div class="footer__contact">
+        <h3>{site.footer.contactHeading}</h3>
+        <p>{site.footer.contactText}</p>
+        {site.footer.email && (
+          <p>
+            Feel free to reach out at <a href={`mailto:${site.footer.email}`}>{site.footer.email}</a>
+            {site.footer.emailWork && (
+              <> — or <a href={`mailto:${site.footer.emailWork}`}>{site.footer.emailWork}</a> for Threemates</>
+            )}
+          </p>
+        )}
+      </div>
+
+      <div class="footer__cv">
+        <h3>Timeline</h3>
+        <ul class="cv-timeline">
+          {site.footer.timeline.map((item) => (
+            <li class="cv-timeline__item">
+              <div class="cv-timeline__role">{item.role}</div>
+              <div class="cv-timeline__org">{item.org}</div>
+              <div class="cv-timeline__time">{item.time}</div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer__copyright">
+        <p>{site.footer.freetimeNote}</p>
+      </div>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+  .github-more {
+    margin-top: 2rem;
+    text-align: center;
+  }
+  .github-more a {
+    font-family: inherit;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+  }
+  .github-more a:hover {
+    opacity: 1;
+  }
+
+  /* Off the Clock (moto vlogs) */
+  .moto-intro {
+    max-width: 55ch;
+    margin-bottom: var(--space-lg, 2rem);
+    color: var(--clr-txt);
+    opacity: 0.9;
+  }
+  .moto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-md, 1.5rem);
+    margin-bottom: var(--space-lg, 2rem);
+  }
+  .moto-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--card-radius, 8px);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  :global(html[data-theme="dark"]) .moto-card {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .moto-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--clr-header);
+  }
+  .moto-card__thumb {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 16 / 9;
+    background: rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+  .moto-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .moto-card__play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+    background: rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .moto-card:hover .moto-card__play {
+    opacity: 1;
+  }
+  .moto-card__body {
+    padding: var(--space-sm, 0.85rem) var(--space-md, 1rem);
+  }
+  .moto-card__title {
+    margin: 0 0 0.35rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--clr-header);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .moto-card__date {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.6;
+  }
+  .moto-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md, 1.5rem);
+  }
+  .moto-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--clr-anchor);
+    text-decoration: none;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+  }
+  .moto-link:hover {
+    opacity: 1;
+  }
+</style>

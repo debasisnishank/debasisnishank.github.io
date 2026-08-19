@@ -1,0 +1,160 @@
+# Sveltia / Decap CMS configuration
+# ---------------------------------------------------------------------------
+# PRODUCTION: point `backend.repo` at your GitHub repo (owner/name) and deploy.
+# Editors sign in with GitHub and every save becomes a commit + push.
+backend:
+  name: github
+  repo: debasisnishank/debasisnishank.github.io
+  branch: main
+  # OAuth relay for signing in from the deployed /admin (GitHub Pages can't run it).
+  # Deploy `sveltia-cms-auth` to Cloudflare Workers (see README) and put its URL here:
+  base_url: https://YOUR-WORKER.workers.dev   # <-- CHANGE after deploying the OAuth worker
+
+# LOCAL EDITING: with `npm run cms-proxy` running, open http://localhost:4321/admin/
+# and the CMS reads/writes your local files directly (no GitHub needed).
+local_backend: true
+
+# Uploaded images land here; referenced in the site from `public_folder`.
+media_folder: public/assets/img/uploads
+public_folder: /assets/img/uploads
+
+collections:
+  # ---- Global site settings ----
+  - name: settings
+    label: Site Settings
+    delete: false
+    editor: { preview: false }
+    files:
+      - name: site
+        label: Site & Footer
+        file: src/content/settings/site.json
+        fields:
+          - { label: Name, name: name, widget: string }
+          - { label: Tagline, name: tagline, widget: string }
+          - { label: Hero bio, name: bio, widget: text }
+          - { label: Meta description (SEO), name: metaDescription, widget: text }
+          - label: Social links
+            name: socials
+            widget: object
+            fields:
+              - { label: CV (file path or URL), name: cv, widget: string, required: false }
+              - { label: ORCID, name: orcid, widget: string, required: false }
+              - { label: GitHub, name: github, widget: string, required: false }
+              - { label: LinkedIn, name: linkedin, widget: string, required: false }
+              - { label: Twitter, name: twitter, widget: string, required: false }
+              - { label: YouTube, name: youtube, widget: string, required: false }
+              - { label: Instagram, name: instagram, widget: string, required: false }
+              - { label: Telegram, name: telegram, widget: string, required: false }
+              - { label: Email (personal), name: email, widget: string, required: false }
+              - { label: Email (Threemates/work), name: emailWork, widget: string, required: false }
+          - label: Footer
+            name: footer
+            widget: object
+            fields:
+              - { label: Contact heading, name: contactHeading, widget: string }
+              - { label: Contact text, name: contactText, widget: text }
+              - { label: Contact email (personal), name: email, widget: string, required: false }
+              - { label: Contact email (Threemates/work), name: emailWork, widget: string, required: false }
+              - label: Timeline
+                name: timeline
+                widget: list
+                fields:
+                  - { label: Role, name: role, widget: string }
+                  - { label: Organisation, name: org, widget: string }
+                  - { label: Time, name: time, widget: string }
+              - { label: Free-time note, name: freetimeNote, widget: text }
+
+  # ---- Home page sections ----
+  - name: home
+    label: Home Page
+    delete: false
+    editor: { preview: false }
+    files:
+      - name: home
+        label: Home Sections
+        file: src/content/home/home.json
+        fields:
+          - label: "Now — paragraphs"
+            name: now
+            widget: list
+            field: { label: Paragraph, name: paragraph, widget: text }
+          - label: Research
+            name: research
+            widget: object
+            fields:
+              - label: Research items
+                name: items
+                widget: list
+                fields:
+                  - { label: Title, name: title, widget: string }
+                  - { label: Meta line, name: meta, widget: string }
+                  - label: Description paragraphs
+                    name: description
+                    widget: list
+                    field: { label: Paragraph, name: paragraph, widget: text }
+              - label: Publications
+                name: publications
+                widget: list
+                fields:
+                  - { label: Title, name: title, widget: text }
+                  - { label: Venue, name: venue, widget: string }
+                  - { label: URL, name: url, widget: string, required: false }
+
+  # ---- About page ----
+  - name: about
+    label: About Page
+    delete: false
+    editor: { preview: false }
+    files:
+      - name: about
+        label: About
+        file: src/content/about/about.json
+        fields:
+          - { label: Heading, name: heading, widget: string }
+          - label: Body paragraphs
+            name: body
+            widget: list
+            field: { label: Paragraph, name: paragraph, widget: text }
+
+  # ---- Projects (one file each) ----
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: src/content/projects
+    create: true
+    format: frontmatter
+    extension: md
+    slug: "{{fields.title | slugify}}"
+    identifier_field: title
+    sortable_fields: [order, title]
+    editor: { preview: false }
+    fields:
+      - { label: Title (card), name: title, widget: string }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+      - label: Tags
+        name: tags
+        widget: list
+        field: { label: Tag, name: tag, widget: string }
+      - { label: Card description, name: cardDescription, widget: text }
+      - { label: Card context, name: cardContext, widget: text, required: false }
+      - label: Card link
+        name: cardLink
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: Label, name: label, widget: string }
+          - { label: URL, name: url, widget: string }
+          - { label: Icon (Font Awesome class), name: icon, widget: string, required: false, default: "fas fa-arrow-right" }
+          - { label: Opens in new tab, name: external, widget: boolean, default: false }
+      - { label: Has detail page?, name: hasDetailPage, widget: boolean, default: false }
+      - { label: Detail title, name: detailTitle, widget: string, required: false, hint: "Hero title on the detail page (if different from card title)" }
+      - { label: Detail meta line, name: meta, widget: string, required: false }
+      - { label: Hero image, name: heroImage, widget: image, required: false }
+      - { label: Hero caption, name: heroCaption, widget: string, required: false }
+      - label: Lede (intro paragraphs)
+        name: lede
+        widget: list
+        required: false
+        field: { label: Paragraph, name: paragraph, widget: text }
+      - { label: Body, name: body, widget: markdown, required: false }
