@@ -8,7 +8,7 @@ backend:
   branch: main
   # OAuth relay for signing in from the deployed /admin (GitHub Pages can't run it).
   # Deploy `sveltia-cms-auth` to Cloudflare Workers (see README) and put its URL here:
-  base_url: https://YOUR-WORKER.workers.dev   # <-- CHANGE after deploying the OAuth worker
+  base_url: https://sveltia-cms-auth.nishankdebasis4.workers.dev
 
 # LOCAL EDITING: with `npm run cms-proxy` running, open http://localhost:4321/admin/
 # and the CMS reads/writes your local files directly (no GitHub needed).
