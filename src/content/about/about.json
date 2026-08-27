@@ -1,8 +1,7 @@
 {
   "heading": "About",
   "body": [
-    "I'm Debasis Nishank, a developer and founder based in Bhubaneswar, India. I run <a href=\"https://threemates.tech\" target=\"_blank\" rel=\"noopener noreferrer\">Threemates</a>, a software development studio building ERP systems, SaaS platforms, and web & mobile apps that help businesses digitize their operations and scale.",
-    "Alongside Threemates, I lead backend engineering at Rabinnson, building multi-tenant SaaS systems for regulatory compliance.",
+    "I'm Debasis Nishank, a developer based in Bhubaneswar, India. I lead backend engineering at Rabinnson, building multi-tenant SaaS systems for regulatory compliance.",
     "My core stack is Java and Spring — Spring Boot, Spring MVC, Hibernate, and REST — backed by PostgreSQL and MongoDB, with React and Next.js on the frontend. I containerise and ship with Docker, Git, and Maven.",
     "I've built a range of systems: a multi-panel employee management platform (EvoStaff), an AWS-based facial-recognition attendance system, and Edu-SaaS, a configurable cloud ERP for educational institutions.",
     "I hold a B.Tech in Computer Science from Centurion University of Technology and Management (CGPA 9.1, 2025), along with certifications in Java Full Stack Development from Wipro and digital governance from eGov Academy.",
