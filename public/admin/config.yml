@@ -45,6 +45,7 @@ collections:
               - { label: YouTube, name: youtube, widget: string, required: false }
               - { label: Instagram, name: instagram, widget: string, required: false }
               - { label: Telegram, name: telegram, widget: string, required: false }
+              - { label: Discord, name: discord, widget: string, required: false }
               - { label: Email (personal), name: email, widget: string, required: false }
               - { label: Email (Threemates/work), name: emailWork, widget: string, required: false }
           - label: Footer
