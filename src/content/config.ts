@@ -25,6 +25,7 @@ const settings = defineCollection({
       youtube: z.string().optional(),
       instagram: z.string().optional(),
       telegram: z.string().optional(),
+      discord: z.string().optional(),
       email: z.string().optional(),
       emailWork: z.string().optional(),
     }),
