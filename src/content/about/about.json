@@ -2,8 +2,8 @@
   "heading": "About",
   "body": [
     "I'm Debasis Nishank, a developer based in Bhubaneswar, India. I lead backend engineering at Rabinnson, building multi-tenant SaaS systems for regulatory compliance.",
-    "My core stack is Java and Spring — Spring Boot, Spring MVC, Hibernate, and REST — backed by PostgreSQL and MongoDB, with React and Next.js on the frontend. I containerise and ship with Docker, Git, and Maven.",
-    "I've built a range of systems: a multi-panel employee management platform (EvoStaff), an AWS-based facial-recognition attendance system, and Edu-SaaS, a configurable cloud ERP for educational institutions.",
+    "My core stack is Java and Spring — Spring Boot, Spring MVC, Hibernate and REST — though most of my recent work has been in TypeScript and Python: Express, NestJS, Fastify and Deno on the backend, React and Next.js on the frontend, and FastAPI wherever there's a model to serve. Data lives in PostgreSQL and PostGIS, MySQL or MongoDB, and everything ships in Docker on Google Cloud or AWS.",
+    "Lately I've been maintaining TRICOS, a co-operative society platform whose legacy PHP API I migrated to Express 5 and MySQL; running a pothole-detection service that reads dashcam video with YOLOv8 for municipal engineers; and building Khetscope, a satellite farm-advisory platform for Indian farmers assembled entirely from free public Earth-observation data.",
     "I hold a B.Tech in Computer Science from Centurion University of Technology and Management (CGPA 9.1, 2025), along with certifications in Java Full Stack Development from Wipro and digital governance from eGov Academy.",
     "I'm always open to discussing backend and full-stack work, freelance projects, or new ideas. Reach me at <a href=\"mailto:nishankdebasis4@gmail.com\">nishankdebasis4@gmail.com</a>."
   ]

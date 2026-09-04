@@ -1,8 +1,8 @@
 {
   "name": "Debasis Nishank",
   "tagline": "Full-Stack Developer & Team Lead",
-  "bio": "These days, I lead backend engineering at Rabinnson, working across Java, Spring, React, and PostgreSQL.",
-  "metaDescription": "Debasis Nishank — full-stack developer and team lead building multi-tenant SaaS systems with Java, Spring, and React.",
+  "bio": "These days, I lead backend engineering at Rabinnson and build across Java, Spring, TypeScript and Python.",
+  "metaDescription": "Debasis Nishank — full-stack developer and team lead building multi-tenant SaaS systems with Java, Spring, TypeScript and Python.",
   "socials": {
     "cv": "/resume.docx",
     "orcid": "",
@@ -22,9 +22,21 @@
     "email": "nishankdebasis4@gmail.com",
     "emailWork": "",
     "timeline": [
-      { "role": "Team Lead", "org": "Rabinnson Private Limited", "time": "2025 - Present" },
-      { "role": "Full-Stack Developer, Edu-SaaS", "org": "Thinkerscave", "time": "Jun 2025 - Oct 2025" },
-      { "role": "B.Tech, Computer Science (CGPA 9.1)", "org": "Centurion University of Technology and Management", "time": "2021 - 2025" }
+      {
+        "role": "Team Lead",
+        "org": "Rabinnson Private Limited",
+        "time": "2025 - Present"
+      },
+      {
+        "role": "Full-Stack Developer, Edu-SaaS",
+        "org": "Thinkerscave",
+        "time": "Jun 2025 - Oct 2025"
+      },
+      {
+        "role": "B.Tech, Computer Science (CGPA 9.1)",
+        "org": "Centurion University of Technology and Management",
+        "time": "2021 - 2025"
+      }
     ],
     "freetimeNote": "Outside of work, I build side projects, explore new frameworks, and keep up with the Java and cloud ecosystem."
   }
