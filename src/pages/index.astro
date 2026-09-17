@@ -5,8 +5,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const site = (await getEntry('settings', 'site')).data;
 const home = (await getEntry('home', 'home')).data;
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const tools = (await getCollection('tools')).sort((a, b) => a.data.order - b.data.order);
 const s = site.socials;
 const hasResearch = home.research.items.length > 0 || home.research.publications.length > 0;
+const hasTools = tools.length > 0;
 
 // --- Recent repos from GitHub, fetched at build time (baked into the HTML) ---
 const GH_USERS = ['debasisnishank', 'devnsk'];
@@ -90,6 +92,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
             <a href="#now">Now</a>
             {hasResearch && <a href="#research">Research</a>}
             <a href="#projects">Projects</a>
+            {hasTools && <a href="#tools">Tools</a>}
             {hasGithub && <a href="#github">Code</a>}
             {hasMoto && <a href="#moto">Moto</a>}
           </nav>
@@ -188,6 +191,50 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
         </div>
       </div>
     </section>
+
+    <!-- TOOLS Section -->
+    {hasTools && (
+    <section id="tools" class="section section--projects section--short">
+      <div class="section__container">
+        <h2 class="section__header">Tools</h2>
+        <div class="projects__grid">
+          {tools.map((tool) => {
+            const t = tool.data;
+            const spec = [t.platform, t.version].filter(Boolean).join(' \u2022 ');
+            return (
+              <article class="project-card" tabindex="0">
+                <h3 class="project-card__title">{t.title}</h3>
+                <div class="project-card__tags">
+                  {t.tags.map((tag) => <span class="project-card__tag">{tag}</span>)}
+                </div>
+                <p class="project-card__description">{t.cardDescription}</p>
+                {t.cardContext && <p class="project-card__context">{t.cardContext}</p>}
+                {spec && <p class="project-card__context">{spec}</p>}
+                {t.download && (
+                  <a
+                    href={t.download.url}
+                    class="project-card__link"
+                    {...(t.download.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
+                    {t.download.label} <i class={t.download.icon ?? 'fas fa-download'}></i>
+                  </a>
+                )}
+                {t.secondaryLink && (
+                  <a
+                    href={t.secondaryLink.url}
+                    class="project-card__link"
+                    {...(t.secondaryLink.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
+                    {t.secondaryLink.label} <i class={t.secondaryLink.icon ?? 'fas fa-arrow-right'}></i>
+                  </a>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+    )}
 
     <!-- RECENT ON GITHUB Section -->
     {hasGithub && (

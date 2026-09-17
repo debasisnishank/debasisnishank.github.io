@@ -93,4 +93,20 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { settings, home, about, projects };
+/* ---- Tools (folder) ---- */
+const tools = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    order: z.number().default(0),
+    tags: z.array(z.string()).default([]),
+    cardDescription: z.string(),
+    cardContext: z.string().optional(),
+    platform: z.string().optional(),          // e.g. "macOS 12+"
+    version: z.string().optional(),           // e.g. "v1.0.0"
+    download: link.optional(),                // the downloadable build
+    secondaryLink: link.optional(),           // docs, notes, anything else
+  }),
+});
+
+export const collections = { settings, home, about, projects, tools };
