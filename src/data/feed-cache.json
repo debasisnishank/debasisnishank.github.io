@@ -1,0 +1,90 @@
+{
+  "youtube": {
+    "fetchedAt": "2026-09-19T08:36:55.774Z",
+    "videos": [
+      {
+        "id": "iyjDzzDX66Y",
+        "title": "speed camera 😤",
+        "published": "2026-09-18T04:30:29Z",
+        "thumb": "https://i.ytimg.com/vi/iyjDzzDX66Y/hqdefault.jpg"
+      },
+      {
+        "id": "d8iGR5bA3yU",
+        "title": "shooting grip for DJI camera",
+        "published": "2026-09-16T03:30:29Z",
+        "thumb": "https://i.ytimg.com/vi/d8iGR5bA3yU/hqdefault.jpg"
+      },
+      {
+        "id": "QXUgaU3JRZc",
+        "title": "car guy personally took it😬",
+        "published": "2026-09-14T03:30:34Z",
+        "thumb": "https://i.ytimg.com/vi/QXUgaU3JRZc/hqdefault.jpg"
+      }
+    ]
+  },
+  "github": {
+    "fetchedAt": "2026-09-19T08:36:55.774Z",
+    "repos": [
+      {
+        "name": "ig-analyzer",
+        "title": "ig analyzer",
+        "description": "just analyze your profile , which can help you to grow more",
+        "language": "Python",
+        "stars": 0,
+        "url": "https://github.com/debasisnishank/ig-analyzer",
+        "pushed": "2026-09-05T09:29:26Z",
+        "owner": "debasisnishank"
+      },
+      {
+        "name": "kissan-alert-solution",
+        "title": "kissan alert solution",
+        "description": "Khetscope — satellite-powered smart farming advisory platform for Indian farmers, with a bank officer credit assessment portal.",
+        "language": "TypeScript",
+        "stars": 0,
+        "url": "https://github.com/debasisnishank/kissan-alert-solution",
+        "pushed": "2026-07-08T11:17:23Z",
+        "owner": "debasisnishank"
+      },
+      {
+        "name": "xml-template-mapper-",
+        "title": "xml template mapper",
+        "description": null,
+        "language": "TypeScript",
+        "stars": 0,
+        "url": "https://github.com/debasisnishank/xml-template-mapper-",
+        "pushed": "2026-05-11T03:58:13Z",
+        "owner": "debasisnishank"
+      },
+      {
+        "name": "jobflow",
+        "title": "jobflow",
+        "description": null,
+        "language": "TypeScript",
+        "stars": 0,
+        "url": "https://github.com/debasisnishank/jobflow",
+        "pushed": "2026-04-18T18:38:50Z",
+        "owner": "debasisnishank"
+      },
+      {
+        "name": "Multi-Model-Proxy-Gateway-v2.0-",
+        "title": "Multi Model Proxy Gateway v2.0",
+        "description": "Local proxy gateway that translates Claude API requests (OpenAI & Anthropic formats) to   OpusMax — supports streaming and multiple Claude models.",
+        "language": "JavaScript",
+        "stars": 0,
+        "url": "https://github.com/debasisnishank/Multi-Model-Proxy-Gateway-v2.0-",
+        "pushed": "2026-04-16T04:58:50Z",
+        "owner": "debasisnishank"
+      },
+      {
+        "name": "dayflow-hrms",
+        "title": "dayflow hrms",
+        "description": "Oddo hackathon",
+        "language": "TypeScript",
+        "stars": 0,
+        "url": "https://github.com/devnsk/dayflow-hrms",
+        "pushed": "2026-01-04T13:06:33Z",
+        "owner": "devnsk"
+      }
+    ]
+  }
+}

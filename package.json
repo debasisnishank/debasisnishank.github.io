@@ -5,10 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/refresh-feeds.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "cms-proxy": "decap-server"
+    "cms-proxy": "decap-server",
+    "refresh-feeds": "node scripts/refresh-feeds.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

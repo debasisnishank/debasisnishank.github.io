@@ -2,6 +2,7 @@
 import { getEntry, getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
+import feeds from '../data/feed-cache.json';
 
 const site = (await getEntry('settings', 'site')).data;
 const home = (await getEntry('home', 'home')).data;
@@ -11,108 +12,17 @@ const s = site.socials;
 const hasResearch = home.research.items.length > 0 || home.research.publications.length > 0;
 const hasTools = tools.length > 0;
 
-// --- Recent repos from GitHub, fetched at build time (baked into the HTML) ---
-const GH_USERS = ['debasisnishank', 'devnsk'];
-const GH_EXCLUDE = ['debasisnishank.github.io']; // don't list this site itself
-
-async function fetchRecentRepos(users, exclude) {
-  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'astro-build' };
-  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-  const all = [];
-  for (const u of users) {
-    try {
-      const res = await fetch(`https://api.github.com/users/${u}/repos?sort=pushed&per_page=100&type=owner`, { headers });
-      if (!res.ok) {
-        console.warn(`[github] repos for @${u} failed: ${res.status} ${res.statusText} — section may be short.`);
-        continue;
-      }
-      const repos = await res.json();
-      for (const r of repos) {
-        if (r.fork || exclude.includes(r.name.toLowerCase())) continue;
-        all.push({
-          name: r.name,
-          title: r.name.replace(/[-_]+/g, ' ').trim(),
-          description: r.description,
-          language: r.language,
-          stars: r.stargazers_count,
-          url: r.html_url,
-          pushed: r.pushed_at,
-          owner: u,
-        });
-      }
-    } catch (err) {
-      console.warn(`[github] repos for @${u} errored: ${err.message} — section may be short.`);
-    }
-  }
-  all.sort((a, b) => (a.pushed < b.pushed ? 1 : -1));
-  return all;
-}
-
-const ghRepos = (await fetchRecentRepos(GH_USERS, GH_EXCLUDE)).slice(0, 6);
+// --- YouTube + GitHub data ---
+// Fetched by scripts/refresh-feeds.mjs before the build, never here. Keeping
+// the network out of the render means a third-party outage can't fail the
+// build or silently empty a section; the script falls back to cached values
+// and warns instead. See that file for the history.
+const ghRepos = feeds.github.repos;
 const hasGithub = ghRepos.length > 0;
 const fmtMonth = (iso) => new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
-// --- Latest YouTube uploads (Nishank Moto), via the YouTube Data API ---
-// This used to read youtube.com/feeds/videos.xml, but that endpoint began
-// returning 404 for every channel in Sept 2026 and silently emptied this
-// section. The Data API costs 1 quota unit per build against a 10k/day free
-// tier. Set YOUTUBE_API_KEY locally to preview; CI reads it from a repo secret.
-const YT_CHANNEL_ID = 'UCqRDpmpoGYUOWS-qP88xWpA';
-// A channel's uploads playlist is its id with the UC prefix swapped for UU.
-const YT_UPLOADS_PLAYLIST = `UU${YT_CHANNEL_ID.slice(2)}`;
-
-function decodeEntities(str) {
-  return str
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n));
-}
-
-async function fetchYouTube(playlistId, limit) {
-  const key = process.env.YOUTUBE_API_KEY;
-  if (!key) {
-    // Not fatal: local builds and forks have no key, and the section degrades
-    // to its two links. Loud enough to notice, though.
-    console.warn(
-      '\n[youtube] YOUTUBE_API_KEY is not set — the "Off the Clock" video grid ' +
-      'will render empty.\n          Set it in the environment to preview locally.\n'
-    );
-    return [];
-  }
-
-  const url = new URL('https://www.googleapis.com/youtube/v3/playlistItems');
-  url.searchParams.set('part', 'snippet');
-  url.searchParams.set('playlistId', playlistId);
-  // Over-fetch slightly: private/deleted uploads come back without a videoId.
-  url.searchParams.set('maxResults', String(limit + 2));
-  url.searchParams.set('key', key);
-
-  const res = await fetch(url, { headers: { 'User-Agent': 'astro-build' } });
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    // Fail the build. The previous version swallowed this, so when the feed
-    // died the deploy went green and the section just vanished.
-    throw new Error(
-      `[youtube] playlistItems failed: ${res.status} ${res.statusText}\n${body.slice(0, 500)}`
-    );
-  }
-
-  const items = (await res.json()).items ?? [];
-  const videos = items.map((item) => {
-    const sn = item.snippet ?? {};
-    const id = sn.resourceId?.videoId;
-    if (!id) return null;
-    const rawTitle = decodeEntities(sn.title ?? '');
-    const clean = rawTitle.replace(/#\S+/g, '').replace(/\s+/g, ' ').trim();
-    const thumb = sn.thumbnails?.high?.url ?? sn.thumbnails?.medium?.url
-      ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-    return { id, title: clean || rawTitle, published: sn.publishedAt, thumb };
-  }).filter(Boolean).slice(0, limit);
-
-  if (!videos.length) {
-    throw new Error(`[youtube] playlist ${playlistId} returned no usable videos.`);
-  }
-  return videos;
-}
+const ytVideos = feeds.youtube.videos;
+const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
 
 // Hero social buttons — one list so the icon, label and rel stay in step.
 const socialLinks = [
@@ -129,8 +39,6 @@ const socialLinks = [
   { key: 'emailWork', icon: 'briefcase', label: 'Work email', url: s.emailWork && `mailto:${s.emailWork}`, external: false },
 ].filter((l) => !!l.url);
 
-const ytVideos = await fetchYouTube(YT_UPLOADS_PLAYLIST, 3);
-const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
 ---
 
 <BaseLayout title={`${site.name} - Personal Portfolio`} personSchema>
@@ -313,7 +221,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
           ))}
         </div>
         <p class="github-more">
-          <a href={s.github ?? `https://github.com/${GH_USERS[0]}`} target="_blank" rel="noopener noreferrer">
+          <a href={s.github ?? 'https://github.com/debasisnishank'} target="_blank" rel="noopener noreferrer">
             See all repositories &rarr;
           </a>
         </p>
