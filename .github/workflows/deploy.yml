@@ -31,6 +31,9 @@ jobs:
         env:
           # Authenticates the build-time GitHub API calls (higher rate limit).
           GITHUB_TOKEN: ${{ github.token }}
+          # YouTube Data API key for the "Off the Clock" section. Without it the
+          # video grid renders empty; with a bad one the build fails loudly.
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         # Builds with npm and uploads ./dist as the Pages artifact.
 
   deploy:

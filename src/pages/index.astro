@@ -22,7 +22,10 @@ async function fetchRecentRepos(users, exclude) {
   for (const u of users) {
     try {
       const res = await fetch(`https://api.github.com/users/${u}/repos?sort=pushed&per_page=100&type=owner`, { headers });
-      if (!res.ok) continue;
+      if (!res.ok) {
+        console.warn(`[github] repos for @${u} failed: ${res.status} ${res.statusText} — section may be short.`);
+        continue;
+      }
       const repos = await res.json();
       for (const r of repos) {
         if (r.fork || exclude.includes(r.name.toLowerCase())) continue;
@@ -37,7 +40,9 @@ async function fetchRecentRepos(users, exclude) {
           owner: u,
         });
       }
-    } catch { /* offline / rate-limited — section just hides */ }
+    } catch (err) {
+      console.warn(`[github] repos for @${u} errored: ${err.message} — section may be short.`);
+    }
   }
   all.sort((a, b) => (a.pushed < b.pushed ? 1 : -1));
   return all;
@@ -47,8 +52,14 @@ const ghRepos = (await fetchRecentRepos(GH_USERS, GH_EXCLUDE)).slice(0, 6);
 const hasGithub = ghRepos.length > 0;
 const fmtMonth = (iso) => new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
-// --- Latest YouTube uploads (Nishank Moto), via the channel's public RSS feed ---
+// --- Latest YouTube uploads (Nishank Moto), via the YouTube Data API ---
+// This used to read youtube.com/feeds/videos.xml, but that endpoint began
+// returning 404 for every channel in Sept 2026 and silently emptied this
+// section. The Data API costs 1 quota unit per build against a 10k/day free
+// tier. Set YOUTUBE_API_KEY locally to preview; CI reads it from a repo secret.
 const YT_CHANNEL_ID = 'UCqRDpmpoGYUOWS-qP88xWpA';
+// A channel's uploads playlist is its id with the UC prefix swapped for UU.
+const YT_UPLOADS_PLAYLIST = `UU${YT_CHANNEL_ID.slice(2)}`;
 
 function decodeEntities(str) {
   return str
@@ -56,23 +67,51 @@ function decodeEntities(str) {
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n));
 }
 
-async function fetchYouTube(channelId, limit) {
-  try {
-    const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, {
-      headers: { 'User-Agent': 'astro-build' },
-    });
-    if (!res.ok) return [];
-    const xml = await res.text();
-    return xml.split('<entry>').slice(1).map((e) => {
-      const id = (e.match(/<yt:videoId>([^<]*)<\/yt:videoId>/) || [])[1];
-      const rawTitle = decodeEntities((e.match(/<title>([^<]*)<\/title>/) || [])[1] || '');
-      const clean = rawTitle.replace(/#\S+/g, '').replace(/\s+/g, ' ').trim();
-      const published = (e.match(/<published>([^<]*)<\/published>/) || [])[1];
-      return id ? { id, title: clean || rawTitle, published, thumb: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` } : null;
-    }).filter(Boolean).slice(0, limit);
-  } catch {
+async function fetchYouTube(playlistId, limit) {
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) {
+    // Not fatal: local builds and forks have no key, and the section degrades
+    // to its two links. Loud enough to notice, though.
+    console.warn(
+      '\n[youtube] YOUTUBE_API_KEY is not set — the "Off the Clock" video grid ' +
+      'will render empty.\n          Set it in the environment to preview locally.\n'
+    );
     return [];
   }
+
+  const url = new URL('https://www.googleapis.com/youtube/v3/playlistItems');
+  url.searchParams.set('part', 'snippet');
+  url.searchParams.set('playlistId', playlistId);
+  // Over-fetch slightly: private/deleted uploads come back without a videoId.
+  url.searchParams.set('maxResults', String(limit + 2));
+  url.searchParams.set('key', key);
+
+  const res = await fetch(url, { headers: { 'User-Agent': 'astro-build' } });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    // Fail the build. The previous version swallowed this, so when the feed
+    // died the deploy went green and the section just vanished.
+    throw new Error(
+      `[youtube] playlistItems failed: ${res.status} ${res.statusText}\n${body.slice(0, 500)}`
+    );
+  }
+
+  const items = (await res.json()).items ?? [];
+  const videos = items.map((item) => {
+    const sn = item.snippet ?? {};
+    const id = sn.resourceId?.videoId;
+    if (!id) return null;
+    const rawTitle = decodeEntities(sn.title ?? '');
+    const clean = rawTitle.replace(/#\S+/g, '').replace(/\s+/g, ' ').trim();
+    const thumb = sn.thumbnails?.high?.url ?? sn.thumbnails?.medium?.url
+      ?? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+    return { id, title: clean || rawTitle, published: sn.publishedAt, thumb };
+  }).filter(Boolean).slice(0, limit);
+
+  if (!videos.length) {
+    throw new Error(`[youtube] playlist ${playlistId} returned no usable videos.`);
+  }
+  return videos;
 }
 
 // Hero social buttons — one list so the icon, label and rel stay in step.
@@ -90,7 +129,7 @@ const socialLinks = [
   { key: 'emailWork', icon: 'briefcase', label: 'Work email', url: s.emailWork && `mailto:${s.emailWork}`, external: false },
 ].filter((l) => !!l.url);
 
-const ytVideos = await fetchYouTube(YT_CHANNEL_ID, 3);
+const ytVideos = await fetchYouTube(YT_UPLOADS_PLAYLIST, 3);
 const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
 ---
 
