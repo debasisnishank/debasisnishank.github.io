@@ -1,0 +1,256 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import feeds from '../data/feed-cache.json';
+
+const site = (await getEntry('settings', 'site')).data;
+const tech = feeds.tech ?? { fetchedAt: null, repos: [], showhn: [] };
+
+const fmtDay = (iso) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const fmtStars = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
+
+const updated = tech.fetchedAt
+  ? new Date(tech.fetchedAt).toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric',
+    })
+  : null;
+
+const description =
+  'Newly released open source worth a look — breakout repositories and things ' +
+  'people shipped this week. Rebuilt daily.';
+---
+
+<BaseLayout title={`Signals - ${site.name}`} description={description}>
+  <main id="main-content">
+    <section class="section section--short">
+      <div class="section__container">
+        <nav class="about__nav">
+          <a href="/" class="about__back">&larr; Back to home</a>
+        </nav>
+
+        <header class="signals__header">
+          <h1 class="hero__name">Signals</h1>
+          <p class="signals__lede">
+            Open source I'd actually open a tab for — repositories that broke out
+            in the last three weeks, and tools people shipped rather than wrote
+            about. Collected automatically, filtered to drop reading lists and
+            interview prep, and rebuilt every morning.
+          </p>
+        </header>
+
+        {tech.repos.length > 0 && (
+          <section class="signals__group">
+            <h2 class="section__header">New repositories</h2>
+            <div class="signals__grid">
+              {tech.repos.map((r) => (
+                <article class="signal-card">
+                  <div class="signal-card__top">
+                    <a
+                      class="signal-card__name"
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >{r.name}</a>
+                    <span class="signal-card__stars">{fmtStars(r.stars)}&#9733;</span>
+                  </div>
+                  <p class="signal-card__desc">{r.description}</p>
+                  <div class="signal-card__meta">
+                    {r.language && <span class="signal-card__lang">{r.language}</span>}
+                    <span>new as of {fmtDay(r.created)}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {tech.showhn.length > 0 && (
+          <section class="signals__group">
+            <h2 class="section__header">Shipped on Show HN</h2>
+            <ul class="signals__list">
+              {tech.showhn.map((h) => (
+                <li class="signal-row">
+                  <a
+                    class="signal-row__title"
+                    href={h.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >{h.title}</a>
+                  <span class="signal-row__meta">
+                    {h.points} points &middot;{' '}
+                    <a href={h.discussion} target="_blank" rel="noopener noreferrer">
+                      {h.comments} comments
+                    </a>{' '}
+                    &middot; {fmtDay(h.created)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {tech.repos.length === 0 && tech.showhn.length === 0 && (
+          <p class="signals__empty">
+            Nothing collected yet — the next scheduled build will fill this in.
+          </p>
+        )}
+
+        <footer class="signals__foot">
+          <p>
+            Sources: the GitHub search API and Hacker News.
+            {updated && <> Last collected {updated}.</>}
+          </p>
+          <a href={site.socials.github ?? 'https://github.com/debasisnishank'}
+             target="_blank" rel="noopener noreferrer" class="signals__foot-link">
+            <Icon name="github" /> My own repositories &rarr;
+          </a>
+        </footer>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .signals__header {
+    max-width: 62ch;
+    margin-bottom: var(--space-lg, 4rem);
+  }
+  .signals__lede {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    opacity: 0.85;
+    margin-top: var(--space-sm, 1rem);
+  }
+  .signals__group {
+    margin-bottom: var(--space-lg, 4rem);
+  }
+  .signals__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-md, 2rem);
+    margin-top: var(--space-md, 2rem);
+  }
+
+  .signal-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: var(--card-padding, 1.5rem);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--card-radius, 4px);
+    transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+  :global(html[data-theme='dark']) .signal-card {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .signal-card:hover {
+    border-color: var(--clr-header);
+    transform: translateY(-3px);
+  }
+  .signal-card__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .signal-card__name {
+    font-family: var(--font-monospace);
+    font-size: 0.9rem;
+    color: var(--clr-header);
+    word-break: break-word;
+    text-decoration: none;
+  }
+  .signal-card__name:hover {
+    text-decoration: underline;
+  }
+  .signal-card__stars {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+  }
+  .signal-card__desc {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.9;
+  }
+  .signal-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.35rem;
+    font-size: 0.78rem;
+    opacity: 0.6;
+  }
+  .signal-card__lang::before {
+    content: '';
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.4em;
+    border-radius: 50%;
+    background: currentColor;
+    vertical-align: baseline;
+  }
+
+  .signals__list {
+    list-style: none;
+    margin: var(--space-md, 2rem) 0 0;
+    padding: 0;
+  }
+  .signal-row {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  :global(html[data-theme='dark']) .signal-row {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+  .signal-row:last-child {
+    border-bottom: 0;
+  }
+  .signal-row__title {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--clr-txt);
+    text-decoration: none;
+  }
+  .signal-row__title:hover {
+    color: var(--clr-header);
+    text-decoration: underline;
+  }
+  .signal-row__meta {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.78rem;
+    opacity: 0.6;
+  }
+
+  .signals__empty {
+    font-family: var(--font-body);
+    opacity: 0.7;
+  }
+  .signals__foot {
+    margin-top: var(--space-lg, 4rem);
+    padding-top: var(--space-sm, 1rem);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.82rem;
+    opacity: 0.7;
+  }
+  :global(html[data-theme='dark']) .signals__foot {
+    border-top-color: rgba(255, 255, 255, 0.12);
+  }
+  .signals__foot-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    color: var(--clr-anchor);
+  }
+</style>
