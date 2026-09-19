@@ -7,6 +7,10 @@ import rehypeKatex from 'rehype-katex';
 export default defineConfig({
   // Emits /sitemap-index.xml, referenced from robots.txt.
   integrations: [sitemap()],
+  // /signals moved to its own site; keep the old URL working.
+  redirects: {
+    '/signals': 'https://signals.debasisnishank.com',
+  },
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
