@@ -2,6 +2,10 @@
 # ---------------------------------------------------------------------------
 # PRODUCTION: point `backend.repo` at your GitHub repo (owner/name) and deploy.
 # Editors sign in with GitHub and every save becomes a commit + push.
+site_url: https://debasisnishank.com
+display_url: https://debasisnishank.com
+logo_url: /logo.svg
+
 backend:
   name: github
   repo: debasisnishank/debasisnishank.github.io
@@ -37,7 +41,7 @@ collections:
             name: socials
             widget: object
             fields:
-              - { label: CV (file path or URL), name: cv, widget: string, required: false }
+              - { label: CV (file path or URL), name: cv, widget: string, required: false, hint: "Path to a file in public/, e.g. /resume.pdf — or an external URL" }
               - { label: ORCID, name: orcid, widget: string, required: false }
               - { label: GitHub, name: github, widget: string, required: false }
               - { label: LinkedIn, name: linkedin, widget: string, required: false }
@@ -47,7 +51,7 @@ collections:
               - { label: Telegram, name: telegram, widget: string, required: false }
               - { label: Discord, name: discord, widget: string, required: false }
               - { label: Email (personal), name: email, widget: string, required: false }
-              - { label: Email (Threemates/work), name: emailWork, widget: string, required: false }
+              - { label: Email (work), name: emailWork, widget: string, required: false }
           - label: Footer
             name: footer
             widget: object
@@ -55,7 +59,7 @@ collections:
               - { label: Contact heading, name: contactHeading, widget: string }
               - { label: Contact text, name: contactText, widget: text }
               - { label: Contact email (personal), name: email, widget: string, required: false }
-              - { label: Contact email (Threemates/work), name: emailWork, widget: string, required: false }
+              - { label: Contact email (work), name: emailWork, widget: string, required: false }
               - label: Timeline
                 name: timeline
                 widget: list
@@ -146,7 +150,7 @@ collections:
         fields:
           - { label: Label, name: label, widget: string }
           - { label: URL, name: url, widget: string }
-          - { label: Icon (Font Awesome class), name: icon, widget: string, required: false, default: "fas fa-arrow-right" }
+          - { label: Icon, name: icon, widget: select, required: false, default: "arrow-right", options: ["arrow-right", "download", "file-pdf", "envelope", "briefcase", "play", "github", "linkedin", "twitter", "youtube", "instagram", "telegram", "discord", "orcid"] }
           - { label: Opens in new tab, name: external, widget: boolean, default: false }
       - { label: Has detail page?, name: hasDetailPage, widget: boolean, default: false }
       - { label: Detail title, name: detailTitle, widget: string, required: false, hint: "Hero title on the detail page (if different from card title)" }
@@ -158,4 +162,51 @@ collections:
         widget: list
         required: false
         field: { label: Paragraph, name: paragraph, widget: text }
+      - { label: Body, name: body, widget: markdown, required: false }
+
+  # ---- Tools (one file each) ----
+  - name: tools
+    label: Tools
+    label_singular: Tool
+    folder: src/content/tools
+    create: true
+    format: frontmatter
+    extension: md
+    slug: "{{fields.title | slugify}}"
+    identifier_field: title
+    sortable_fields: [order, title]
+    editor: { preview: false }
+    fields:
+      - { label: Title (card), name: title, widget: string }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+      - label: Tags
+        name: tags
+        widget: list
+        field: { label: Tag, name: tag, widget: string }
+      - { label: Card description, name: cardDescription, widget: text }
+      - { label: Card context, name: cardContext, widget: text, required: false, hint: "e.g. Personal tool • Sept 2026." }
+      - { label: Platform, name: platform, widget: string, required: false, hint: "e.g. macOS 12+" }
+      - { label: Version, name: version, widget: string, required: false, hint: "e.g. v1.0.0" }
+      - label: Download
+        name: download
+        widget: object
+        required: false
+        collapsed: true
+        hint: "The downloadable build. Upload the file to public/downloads/ via git, then point the URL at it."
+        fields:
+          - { label: Label, name: label, widget: string, default: "Download" }
+          - { label: URL, name: url, widget: string, hint: "e.g. /downloads/yt-grab-v1.0.0-macos.zip" }
+          - { label: Icon, name: icon, widget: select, required: false, default: "download", options: ["arrow-right", "download", "file-pdf", "envelope", "briefcase", "play", "github", "linkedin", "twitter", "youtube", "instagram", "telegram", "discord", "orcid"] }
+          - { label: Opens in new tab, name: external, widget: boolean, default: false }
+      - label: Secondary link
+        name: secondaryLink
+        widget: object
+        required: false
+        collapsed: true
+        hint: "Docs, source, release notes — anything else."
+        fields:
+          - { label: Label, name: label, widget: string }
+          - { label: URL, name: url, widget: string }
+          - { label: Icon, name: icon, widget: select, required: false, default: "arrow-right", options: ["arrow-right", "download", "file-pdf", "envelope", "briefcase", "play", "github", "linkedin", "twitter", "youtube", "instagram", "telegram", "discord", "orcid"] }
+          - { label: Opens in new tab, name: external, widget: boolean, default: false }
       - { label: Body, name: body, widget: markdown, required: false }
