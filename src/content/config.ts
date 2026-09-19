@@ -4,7 +4,7 @@ import { defineCollection, z } from 'astro:content';
 const link = z.object({
   label: z.string(),
   url: z.string(),
-  icon: z.string().optional(),      // Font Awesome class, e.g. "fas fa-arrow-right"
+  icon: z.string().optional(),      // Icon name from src/components/Icon.astro, e.g. "github"
   external: z.boolean().default(false),
 });
 

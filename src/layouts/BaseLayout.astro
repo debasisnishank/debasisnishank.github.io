@@ -1,5 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
+import Icon from '../components/Icon.astro';
 
 export interface Props {
   title: string;
@@ -9,11 +10,53 @@ export interface Props {
   katex?: boolean;
   /** Load the creative-page interaction script. */
   creativeJs?: boolean;
+  /** Emit Person JSON-LD (homepage and /about — the pages that describe him). */
+  personSchema?: boolean;
+  /** Override the social share image (absolute path under /public). */
+  ogImage?: string;
+  /** og:type — "article" on project detail pages. */
+  ogType?: string;
+  /** Keep the page out of search results (e.g. 404). */
+  noindex?: boolean;
 }
 
-const { title, description, bodyId = 'homepage', katex = false, creativeJs = false } = Astro.props;
+const {
+  title,
+  description,
+  bodyId = 'homepage',
+  katex = false,
+  creativeJs = false,
+  personSchema = false,
+  ogImage = '/og-image.png',
+  ogType = 'website',
+  noindex = false,
+} = Astro.props;
+
 const site = await getEntry('settings', 'site');
 const metaDescription = description ?? site.data.metaDescription;
+
+// Absolute URLs — Open Graph and JSON-LD both reject relative ones.
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site);
+
+const s = site.data.socials;
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.data.name,
+  url: Astro.site?.href,
+  image: ogImageUrl.href,
+  jobTitle: site.data.tagline,
+  description: site.data.metaDescription,
+  email: s.email ? `mailto:${s.email}` : undefined,
+  sameAs: [s.github, s.linkedin, s.twitter, s.youtube, s.instagram, s.orcid].filter(Boolean),
+  alumniOf: site.data.footer.timeline
+    .filter((t) => /university|college|school/i.test(t.org))
+    .map((t) => ({ '@type': 'EducationalOrganization', name: t.org })),
+  worksFor: site.data.footer.timeline
+    .filter((t) => /present/i.test(t.time) && !/university|college|school/i.test(t.org))
+    .map((t) => ({ '@type': 'Organization', name: t.org })),
+};
 ---
 
 <!DOCTYPE html>
@@ -21,22 +64,31 @@ const metaDescription = description ?? site.data.metaDescription;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="index,follow" />
+  <meta name="robots" content={noindex ? 'noindex,nofollow' : 'index,follow'} />
 
   <title>{title}</title>
 
-  <script is:inline type="module">
+  <!-- Must stay inline and render-blocking: it sets data-theme before first
+       paint, so dark-mode visitors don't get a flash of the light palette.
+       script.js only handles the toggle from here on. -->
+  <script is:inline>
     document.documentElement.classList.remove('no-js');
     document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
   </script>
 
   <link rel="stylesheet" href="/assets/css/resets.css" />
   <link rel="stylesheet" href="/assets/css/styles.css" />
-  <link rel="preload" href="/assets/fonts/Reforma1918-GrisItalica.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-  <link rel="preload" href="/assets/fonts/Reforma1969-Blanca.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Paths must match the @font-face src in styles.css, or the browser
+       downloads these twice and warns that the preload went unused. -->
+  <link rel="preload" href="/assets/fonts/Reforma1918/Reforma1918-GrisItalica.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="/assets/fonts/Reforma1969/Reforma1969-Gris.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
   <link rel="stylesheet" href="/assets/css/print.css" media="print" />
 
   {katex && (
@@ -44,10 +96,24 @@ const metaDescription = description ?? site.data.metaDescription;
   )}
 
   <meta name="description" content={metaDescription} />
+  <meta name="author" content={site.data.name} />
+  <link rel="canonical" href={canonical.href} />
 
   <meta property="og:title" content={title} />
   <meta property="og:description" content={metaDescription} />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={ogType} />
+  <meta property="og:url" content={canonical.href} />
+  <meta property="og:site_name" content={site.data.name} />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content={ogImageUrl.href} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={`${site.data.name} — ${site.data.tagline}`} />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={metaDescription} />
+  <meta name="twitter:image" content={ogImageUrl.href} />
 
   <link rel="icon" href="/favicon.ico" />
   <link rel="icon" href="/logo.svg" type="image/svg+xml" />
@@ -55,6 +121,10 @@ const metaDescription = description ?? site.data.metaDescription;
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#003153" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#FFEFD5" media="(prefers-color-scheme: light)" />
+
+  {personSchema && (
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(personLd)} />
+  )}
 
   <!-- Scroll-reveal: initial hidden state (only when JS is on and motion is allowed).
        Keep this selector list in sync with SEL in /assets/js/reveal.js. -->
@@ -90,10 +160,10 @@ const metaDescription = description ?? site.data.metaDescription;
 
   <!-- Theme Toggle -->
   <div class="checkbox">
-    <input type="checkbox" id="checkbox_t" />
+    <input type="checkbox" id="checkbox_t" aria-label="Toggle dark mode" />
     <label for="checkbox_t" class="label">
-      <ion-icon name="sunny" id="sun"></ion-icon>
-      <ion-icon name="moon" id="moon"></ion-icon>
+      <Icon name="sun" id="sun" class="toggle-icon" size={14} />
+      <Icon name="moon" id="moon" class="toggle-icon" size={14} />
       <div class="ball"></div>
     </label>
   </div>
@@ -101,8 +171,6 @@ const metaDescription = description ?? site.data.metaDescription;
   <slot />
 
   <!-- Scripts -->
-  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-  <script is:inline nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1/dist/lenis.min.js"></script>
   <script is:inline src="/assets/js/smooth-scroll.js"></script>
   {creativeJs && <script is:inline src="/assets/js/creative.js"></script>}

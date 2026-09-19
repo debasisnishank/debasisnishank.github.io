@@ -23,6 +23,7 @@ const needsKatex = /\$\$?[^$]+\$\$?/.test(project.body ?? '');
   title={`${p.detailTitle ?? p.title} - ${site.name}`}
   description={p.lede?.[0] ?? p.cardDescription}
   katex={needsKatex}
+  ogType="article"
 >
   <main id="main-content">
     <!-- Hero -->

@@ -11,6 +11,7 @@
     "cms-proxy": "decap-server"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
     "astro": "^4.16.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"

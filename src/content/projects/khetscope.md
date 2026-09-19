@@ -10,7 +10,7 @@ cardContext: Personal project • July 2026.
 cardLink:
   label: View code
   url: https://github.com/debasisnishank/kissan-alert-solution
-  icon: fab fa-github
+  icon: github
   external: true
 hasDetailPage: false
 ---

@@ -12,6 +12,6 @@ version: v1.0.0
 download:
   label: Download for macOS
   url: /downloads/yt-grab-v1.0.0-macos.zip
-  icon: fas fa-download
+  icon: download
   external: false
 ---

@@ -1,0 +1,167 @@
+/* Print styles — loaded with media="print".
+   Goal: a clean paper version of any page (mostly the about page and project
+   write-ups). Strip the chrome, force the light palette, and make links
+   readable off-screen by printing their targets. */
+
+@page {
+  margin: 18mm 16mm;
+}
+
+*,
+*::before,
+*::after {
+  background: transparent !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+html,
+body {
+  background: #fff !important;
+  font-size: 11pt;
+  line-height: 1.45;
+}
+
+/* Scroll-reveal leaves elements at opacity:0 until the observer fires, which
+   may never happen for content below the fold. Force everything visible. */
+.hero__content,
+.section__header,
+.now__main,
+.research__item,
+.research__publications,
+.project-card,
+.moto-intro,
+.moto-card,
+.moto-links,
+.cv-timeline__item,
+.about__content > p,
+.project-content > *,
+.project-hero__header {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Interactive-only chrome has no meaning on paper. */
+.checkbox,
+.skip-link,
+.hero__nav,
+.hero__socials,
+.about__nav,
+.moto-grid,
+.moto-links,
+.project-card__link,
+.github-more,
+.notfound__links,
+#github,
+#moto {
+  display: none !important;
+}
+
+/* Sections stack tight instead of filling a viewport. */
+.section,
+.section--short,
+.section--hero {
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 0 1.2rem !important;
+  page-break-inside: avoid;
+}
+
+.section__container {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.section__header {
+  font-size: 13pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 0.5pt solid #999;
+  padding-bottom: 0.2rem;
+  margin: 1.2rem 0 0.6rem;
+}
+
+.hero__name {
+  font-size: 22pt;
+  padding: 0;
+  margin: 0 0 0.2rem;
+}
+
+.hero__tagline {
+  font-size: 12pt;
+  margin: 0 0 0.6rem;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+
+p,
+li,
+blockquote,
+figure,
+img,
+pre,
+table {
+  page-break-inside: avoid;
+}
+
+img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Cards read as a plain list on paper. */
+.projects__grid {
+  display: block !important;
+}
+
+.project-card {
+  border: 0 !important;
+  border-left: 1.5pt solid #999 !important;
+  border-radius: 0 !important;
+  padding: 0.1rem 0 0.4rem 0.7rem !important;
+  margin: 0 0 0.8rem !important;
+  transform: none !important;
+}
+
+.project-card__tags {
+  font-size: 9pt;
+}
+
+.project-card__tag::after {
+  content: " ·";
+}
+
+.project-card__tag:last-child::after {
+  content: "";
+}
+
+/* Print the destination of real links, but not of in-page anchors (which are
+   meaningless on paper) or of anything already showing its URL. */
+.project-content a[href^="http"]::after,
+.about__content a[href^="http"]::after,
+.publication a[href^="http"]::after {
+  content: " (" attr(href) ")";
+  font-size: 9pt;
+  word-break: break-all;
+}
+
+a {
+  text-decoration: underline;
+}
+
+.site-footer {
+  border-top: 0.5pt solid #999;
+  padding-top: 0.6rem;
+  page-break-inside: avoid;
+}

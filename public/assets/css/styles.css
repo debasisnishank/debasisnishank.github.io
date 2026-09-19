@@ -395,7 +395,10 @@ section .wrapper {
   box-sizing: border-box;
 }
 
-ion-icon {
+/* Icons are inline SVG; never let them swallow a click meant for the control. */
+.label svg,
+.hero__socials svg,
+.project-card__link svg {
   pointer-events: none;
 }
 
@@ -584,12 +587,10 @@ ion-icon {
   cursor: hand;
 }
 
-/* .socials ion-icon, */
-.socials i {
-  /* height: 30px;
-  width: 30px; */
+.socials svg {
   padding: .25em;
-  font-size: 1.5em;
+  width: 1.5em;
+  height: 1.5em;
 }
 
 .socials a:hover {
@@ -737,8 +738,9 @@ html.lenis, html.lenis body {
   text-decoration: none;
 }
 
-.hero__socials i {
-  font-size: 1.25rem;
+.hero__socials svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* Fade in animation */

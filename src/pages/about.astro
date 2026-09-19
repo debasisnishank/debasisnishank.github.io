@@ -6,7 +6,7 @@ const site = (await getEntry('settings', 'site')).data;
 const about = (await getEntry('about', 'about')).data;
 ---
 
-<BaseLayout title={`${about.heading} - ${site.name}`}>
+<BaseLayout title={`${about.heading} - ${site.name}`} personSchema>
   <main id="main-content">
     <section class="section section--short section--about">
       <div class="section__container">

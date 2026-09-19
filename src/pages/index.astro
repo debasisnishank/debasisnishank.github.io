@@ -1,6 +1,7 @@
 ---
 import { getEntry, getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
 
 const site = (await getEntry('settings', 'site')).data;
 const home = (await getEntry('home', 'home')).data;
@@ -74,11 +75,26 @@ async function fetchYouTube(channelId, limit) {
   }
 }
 
+// Hero social buttons — one list so the icon, label and rel stay in step.
+const socialLinks = [
+  { key: 'cv', icon: 'file-pdf', label: 'CV', url: s.cv, external: false },
+  { key: 'orcid', icon: 'orcid', label: 'ORCID', url: s.orcid, external: true },
+  { key: 'github', icon: 'github', label: 'GitHub', url: s.github, external: true },
+  { key: 'linkedin', icon: 'linkedin', label: 'LinkedIn', url: s.linkedin, external: true },
+  { key: 'twitter', icon: 'twitter', label: 'Twitter', url: s.twitter, external: true },
+  { key: 'youtube', icon: 'youtube', label: 'YouTube', url: s.youtube, external: true },
+  { key: 'instagram', icon: 'instagram', label: 'Instagram', url: s.instagram, external: true },
+  { key: 'telegram', icon: 'telegram', label: 'Telegram', url: s.telegram, external: true },
+  { key: 'discord', icon: 'discord', label: 'Discord', url: s.discord, external: true },
+  { key: 'email', icon: 'envelope', label: 'Email', url: s.email && `mailto:${s.email}`, external: false },
+  { key: 'emailWork', icon: 'briefcase', label: 'Work email', url: s.emailWork && `mailto:${s.emailWork}`, external: false },
+].filter((l) => !!l.url);
+
 const ytVideos = await fetchYouTube(YT_CHANNEL_ID, 3);
 const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
 ---
 
-<BaseLayout title={`${site.name} - Personal Portfolio`}>
+<BaseLayout title={`${site.name} - Personal Portfolio`} personSchema>
   <main id="main-content">
     <!-- HERO Section -->
     <section id="hero" class="section section--hero">
@@ -97,17 +113,16 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
             {hasMoto && <a href="#moto">Moto</a>}
           </nav>
           <div class="hero__socials">
-            {s.cv && <a href={s.cv} target="_blank" title="CV"><i class="fas fa-file-pdf"></i></a>}
-            {s.orcid && <a href={s.orcid} target="_blank" title="ORCID"><i class="fab fa-orcid"></i></a>}
-            {s.github && <a href={s.github} target="_blank" title="GitHub"><i class="fab fa-github"></i></a>}
-            {s.linkedin && <a href={s.linkedin} target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>}
-            {s.twitter && <a href={s.twitter} target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>}
-            {s.youtube && <a href={s.youtube} target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>}
-            {s.instagram && <a href={s.instagram} target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>}
-            {s.telegram && <a href={s.telegram} target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>}
-            {s.discord && <a href={s.discord} target="_blank" title="Discord"><i class="fab fa-discord"></i></a>}
-            {s.email && <a href={`mailto:${s.email}`} title="Email"><i class="fas fa-envelope"></i></a>}
-            {s.emailWork && <a href={`mailto:${s.emailWork}`} title="Work email"><i class="fas fa-briefcase"></i></a>}
+            {socialLinks.map((l) => (
+              <a
+                href={l.url}
+                title={l.label}
+                aria-label={l.label}
+                {...(l.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                <Icon name={l.icon} size={20} />
+              </a>
+            ))}
           </div>
         </div>
       </div>
@@ -169,7 +184,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
           {projects.map((project) => {
             const p = project.data;
             return (
-              <article class="project-card" tabindex="0">
+              <article class="project-card">
                 <h3 class="project-card__title">{p.title}</h3>
                 <div class="project-card__tags">
                   {p.tags.map((tag) => <span class="project-card__tag">{tag}</span>)}
@@ -182,7 +197,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
                     class="project-card__link"
                     {...(p.cardLink.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   >
-                    {p.cardLink.label} <i class={p.cardLink.icon ?? 'fas fa-arrow-right'}></i>
+                    {p.cardLink.label} <Icon name={p.cardLink.icon ?? 'arrow-right'} />
                   </a>
                 )}
               </article>
@@ -202,7 +217,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
             const t = tool.data;
             const spec = [t.platform, t.version].filter(Boolean).join(' \u2022 ');
             return (
-              <article class="project-card" tabindex="0">
+              <article class="project-card">
                 <h3 class="project-card__title">{t.title}</h3>
                 <div class="project-card__tags">
                   {t.tags.map((tag) => <span class="project-card__tag">{tag}</span>)}
@@ -216,7 +231,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
                     class="project-card__link"
                     {...(t.download.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   >
-                    {t.download.label} <i class={t.download.icon ?? 'fas fa-download'}></i>
+                    {t.download.label} <Icon name={t.download.icon ?? 'download'} />
                   </a>
                 )}
                 {t.secondaryLink && (
@@ -225,7 +240,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
                     class="project-card__link"
                     {...(t.secondaryLink.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   >
-                    {t.secondaryLink.label} <i class={t.secondaryLink.icon ?? 'fas fa-arrow-right'}></i>
+                    {t.secondaryLink.label} <Icon name={t.secondaryLink.icon ?? 'arrow-right'} />
                   </a>
                 )}
               </article>
@@ -243,7 +258,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
         <h2 class="section__header">Recent on GitHub</h2>
         <div class="projects__grid">
           {ghRepos.map((repo) => (
-            <article class="project-card" tabindex="0">
+            <article class="project-card">
               <h3 class="project-card__title">{repo.title}</h3>
               <div class="project-card__tags">
                 {repo.language && <span class="project-card__tag">{repo.language}</span>}
@@ -253,7 +268,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
               {repo.description && <p class="project-card__description">{repo.description}</p>}
               <p class="project-card__context">Updated {fmtMonth(repo.pushed)}</p>
               <a href={repo.url} class="project-card__link" target="_blank" rel="noopener noreferrer">
-                View code <i class="fab fa-github"></i>
+                View code <Icon name="github" />
               </a>
             </article>
           ))}
@@ -280,7 +295,7 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
               <a class="moto-card" href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer">
                 <figure class="moto-card__thumb">
                   <img src={v.thumb} alt={v.title} loading="lazy" />
-                  <span class="moto-card__play"><i class="fas fa-play"></i></span>
+                  <span class="moto-card__play"><Icon name="play" size={22} /></span>
                 </figure>
                 <div class="moto-card__body">
                   <p class="moto-card__title">{v.title}</p>
@@ -294,12 +309,12 @@ const hasMoto = ytVideos.length > 0 || !!s.youtube || !!s.instagram;
         <div class="moto-links">
           {s.youtube && (
             <a href={s.youtube} target="_blank" rel="noopener noreferrer" class="moto-link">
-              <i class="fab fa-youtube"></i> Nishank Moto on YouTube &rarr;
+              <Icon name="youtube" /> Nishank Moto on YouTube &rarr;
             </a>
           )}
           {s.instagram && (
             <a href={s.instagram} target="_blank" rel="noopener noreferrer" class="moto-link">
-              <i class="fab fa-instagram"></i> @nsk.rides on Instagram &rarr;
+              <Icon name="instagram" /> @nsk.rides on Instagram &rarr;
             </a>
           )}
         </div>

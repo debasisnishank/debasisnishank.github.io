@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# The CMS admin panel is a client-side app behind GitHub OAuth — nothing to index.
+Disallow: /admin/
+
+Sitemap: https://debasisnishank.com/sitemap-index.xml

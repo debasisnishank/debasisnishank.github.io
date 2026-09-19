@@ -1,0 +1,70 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const site = (await getEntry('settings', 'site')).data;
+
+// Point people at the sections that actually exist rather than a dead end.
+const suggestions = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Projects', href: '/#projects' },
+  { label: 'Tools', href: '/#tools' },
+];
+---
+
+<BaseLayout title={`Page not found - ${site.name}`} description="That page doesn't exist." noindex>
+  <main id="main-content">
+    <section class="section section--short section--404">
+      <div class="section__container">
+        <div class="notfound">
+          <p class="notfound__code">404</p>
+          <h1 class="hero__name">Nothing here</h1>
+          <p class="notfound__text">
+            That page doesn't exist — it may have been renamed, or the link that
+            brought you here was wrong.
+          </p>
+          <nav class="notfound__links" aria-label="Suggested pages">
+            {suggestions.map((l) => <a href={l.href}>{l.label}</a>)}
+          </nav>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .section--404 {
+    display: flex;
+    align-items: center;
+    min-height: 80vh;
+  }
+  .notfound {
+    max-width: 55ch;
+  }
+  .notfound__code {
+    font-family: var(--font-section-header, monospace);
+    font-size: 0.95rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--clr-header);
+    margin: 0 0 var(--space-sm, 1rem);
+  }
+  .notfound__text {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.85;
+    margin: 0 0 var(--space-md, 2rem);
+  }
+  .notfound__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm, 1rem) var(--space-md, 2rem);
+  }
+  .notfound__links a {
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    color: var(--clr-anchor);
+  }
+</style>
