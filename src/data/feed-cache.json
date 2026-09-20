@@ -1,10 +1,16 @@
 {
   "youtube": {
-    "fetchedAt": "2026-09-19T08:36:55.774Z",
+    "fetchedAt": "2026-09-20T17:56:57.821Z",
     "videos": [
       {
+        "id": "N0U8BFP7GZo",
+        "title": "mauka milte h bhagoo😂",
+        "published": "2026-09-19T09:30:34Z",
+        "thumb": "https://i.ytimg.com/vi/N0U8BFP7GZo/hqdefault.jpg"
+      },
+      {
         "id": "iyjDzzDX66Y",
-        "title": "speed camera \ud83d\ude24",
+        "title": "speed camera 😤",
         "published": "2026-09-18T04:30:29Z",
         "thumb": "https://i.ytimg.com/vi/iyjDzzDX66Y/hqdefault.jpg"
       },
@@ -13,17 +19,11 @@
         "title": "shooting grip for DJI camera",
         "published": "2026-09-16T03:30:29Z",
         "thumb": "https://i.ytimg.com/vi/d8iGR5bA3yU/hqdefault.jpg"
-      },
-      {
-        "id": "QXUgaU3JRZc",
-        "title": "car guy personally took it\ud83d\ude2c",
-        "published": "2026-09-14T03:30:34Z",
-        "thumb": "https://i.ytimg.com/vi/QXUgaU3JRZc/hqdefault.jpg"
       }
     ]
   },
   "github": {
-    "fetchedAt": "2026-09-19T08:56:12.596Z",
+    "fetchedAt": "2026-09-20T17:56:57.821Z",
     "repos": [
       {
         "name": "signals",
@@ -32,7 +32,7 @@
         "language": "Astro",
         "stars": 0,
         "url": "https://github.com/debasisnishank/signals",
-        "pushed": "2026-09-19T08:55:04Z",
+        "pushed": "2026-09-20T17:37:28Z",
         "owner": "debasisnishank"
       },
       {
@@ -48,7 +48,7 @@
       {
         "name": "kissan-alert-solution",
         "title": "kissan alert solution",
-        "description": "Khetscope \u2014 satellite-powered smart farming advisory platform for Indian farmers, with a bank officer credit assessment portal.",
+        "description": "Khetscope — satellite-powered smart farming advisory platform for Indian farmers, with a bank officer credit assessment portal.",
         "language": "TypeScript",
         "stars": 0,
         "url": "https://github.com/debasisnishank/kissan-alert-solution",
@@ -78,7 +78,7 @@
       {
         "name": "Multi-Model-Proxy-Gateway-v2.0-",
         "title": "Multi Model Proxy Gateway v2.0",
-        "description": "Local proxy gateway that translates Claude API requests (OpenAI & Anthropic formats) to   OpusMax \u2014 supports streaming and multiple Claude models.",
+        "description": "Local proxy gateway that translates Claude API requests (OpenAI & Anthropic formats) to   OpusMax — supports streaming and multiple Claude models.",
         "language": "JavaScript",
         "stars": 0,
         "url": "https://github.com/debasisnishank/Multi-Model-Proxy-Gateway-v2.0-",
