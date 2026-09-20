@@ -1828,9 +1828,34 @@ html[data-theme="dark"] .project-content__lede {
   }
 }
 
+/* Visitor count — sits to the left of the fixed theme toggle. The toggle is
+   50px wide at scale(1.2) with a 40px margin, so it clears the right edge by
+   about 100px; this starts beyond that. */
 .visitors {
-  margin-top: 0.5rem;
-  font-size: 0.82rem;
-  opacity: 0.65;
+  position: fixed;
+  top: 40px;
+  right: 108px;
+  z-index: 5;
+  margin: 0;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-section-header, sans-serif);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clr-txt);
+  opacity: 0.45;
   font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* The toggle keeps its 40px margin at every width, so its left edge stays ~95px
+   from the right. `right` must clear that at all sizes — only the type shrinks. */
+@media (max-width: 560px) {
+  .visitors {
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+  }
 }
