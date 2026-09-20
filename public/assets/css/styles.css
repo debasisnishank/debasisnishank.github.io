@@ -1828,11 +1828,13 @@ html[data-theme="dark"] .project-content__lede {
   }
 }
 
-/* Visitor count — sits to the left of the fixed theme toggle. The toggle is
-   50px wide at scale(1.2) with a 40px margin, so it clears the right edge by
-   about 100px; this starts beyond that. */
+/* Visitor count — sits to the left of the theme toggle at rest. Absolute, not
+   fixed: pinned chrome that follows you down the page is an irritation on a
+   phone, and there is no reason for a vanity number to be permanently in the
+   way. It scrolls off with the hero. `right` clears the toggle, which is 50px
+   wide at scale(1.2) with a 40px margin, so ~95px from the right edge. */
 .visitors {
-  position: fixed;
+  position: absolute;
   top: 40px;
   right: 108px;
   z-index: 5;
