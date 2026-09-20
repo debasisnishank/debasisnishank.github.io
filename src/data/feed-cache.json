@@ -23,8 +23,18 @@
     ]
   },
   "github": {
-    "fetchedAt": "2026-09-20T17:56:57.821Z",
+    "fetchedAt": "2026-09-20T18:05:26.235Z",
     "repos": [
+      {
+        "name": "visitor-counter",
+        "title": "visitor counter",
+        "description": "Cloudflare Worker backing the visitor counts on debasisnishank.com and signals.debasisnishank.com",
+        "language": "JavaScript",
+        "stars": 0,
+        "url": "https://github.com/debasisnishank/visitor-counter",
+        "pushed": "2026-09-20T18:03:24Z",
+        "owner": "debasisnishank"
+      },
       {
         "name": "signals",
         "title": "signals",
@@ -32,7 +42,7 @@
         "language": "Astro",
         "stars": 0,
         "url": "https://github.com/debasisnishank/signals",
-        "pushed": "2026-09-20T17:37:28Z",
+        "pushed": "2026-09-20T17:58:08Z",
         "owner": "debasisnishank"
       },
       {
@@ -73,16 +83,6 @@
         "stars": 0,
         "url": "https://github.com/debasisnishank/jobflow",
         "pushed": "2026-04-18T18:38:50Z",
-        "owner": "debasisnishank"
-      },
-      {
-        "name": "Multi-Model-Proxy-Gateway-v2.0-",
-        "title": "Multi Model Proxy Gateway v2.0",
-        "description": "Local proxy gateway that translates Claude API requests (OpenAI & Anthropic formats) to   OpusMax — supports streaming and multiple Claude models.",
-        "language": "JavaScript",
-        "stars": 0,
-        "url": "https://github.com/debasisnishank/Multi-Model-Proxy-Gateway-v2.0-",
-        "pushed": "2026-04-16T04:58:50Z",
         "owner": "debasisnishank"
       }
     ]
