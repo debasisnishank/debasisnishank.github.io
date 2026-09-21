@@ -158,10 +158,6 @@ const personLd = {
   <!-- Skip link for accessibility -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Visitor count, parked beside the theme toggle so it reads as chrome
-       rather than competing with the hero. Hidden until the Worker answers. -->
-  <p class="visitors" data-site="portfolio" hidden></p>
-
   <!-- Theme Toggle -->
   <div class="checkbox">
     <input type="checkbox" id="checkbox_t" aria-label="Toggle dark mode" />
@@ -180,7 +176,6 @@ const personLd = {
   {creativeJs && <script is:inline src="/assets/js/creative.js"></script>}
   <script is:inline src="/assets/js/script.js" type="module"></script>
   <script is:inline src="/assets/js/reveal.js"></script>
-  <script is:inline defer src="/assets/js/visitors.js"></script>
   {katex && (
     <script is:inline defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   )}

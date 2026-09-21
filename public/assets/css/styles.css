@@ -562,8 +562,6 @@ section .wrapper {
   color: var(--clr-anchor, blue);
 }
 
-
-
 /*=====================================*/
 /* Socials */
 
@@ -1828,39 +1826,3 @@ html[data-theme="dark"] .project-content__lede {
   }
 }
 
-/* Visitor count — sits to the left of the theme toggle at rest. Absolute, not
-   fixed: pinned chrome that follows you down the page is an irritation on a
-   phone, and there is no reason for a vanity number to be permanently in the
-   way. It scrolls off with the hero. `right` clears the toggle, which is 50px
-   wide at scale(1.2) with a 40px margin, so ~95px from the right edge. */
-.visitors {
-  position: absolute;
-  top: 40px;
-  right: 108px;
-  z-index: 5;
-  margin: 0;
-  height: 31px;
-  display: flex;
-  align-items: center;
-  font-family: var(--font-section-header, sans-serif);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--clr-txt);
-  /* 0.45 looked right but measured 2.6:1 in light and 3.6:1 in dark against
-     the page background — both short of WCAG AA's 4.5:1 for 11px text. 0.7 is
-     the lowest value that clears it in both themes. */
-  opacity: 0.7;
-  font-variant-numeric: tabular-nums;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-/* The toggle keeps its 40px margin at every width, so its left edge stays ~95px
-   from the right. `right` must clear that at all sizes — only the type shrinks. */
-@media (max-width: 560px) {
-  .visitors {
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-  }
-}
