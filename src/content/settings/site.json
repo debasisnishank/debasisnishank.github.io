@@ -1,8 +1,8 @@
 {
   "name": "Debasis Nishank",
-  "tagline": "Full-Stack Developer & Team Lead",
-  "bio": "These days, I lead backend engineering at Rabinnson and build across Java, Spring, TypeScript and Python.",
-  "metaDescription": "Debasis Nishank — full-stack developer and team lead building multi-tenant SaaS systems with Java, Spring, TypeScript and Python.",
+  "tagline": "Full-Stack Developer & IoT / Cloud Developer",
+  "bio": "These days, I work at Azeonics and build across Java, Spring, TypeScript and Python.",
+  "metaDescription": "Debasis Nishank — full-stack developer building multi-tenant SaaS systems with Java, Spring, TypeScript and Python.",
   "socials": {
     "cv": "/resume.pdf",
     "orcid": "",
@@ -23,9 +23,14 @@
     "emailWork": "",
     "timeline": [
       {
+        "role": "Full-Stack Developer & IoT / Cloud Developer (Integration)",
+        "org": "AZEONICS",
+        "time": "2026 - Present"
+      },
+      {
         "role": "Team Lead",
         "org": "Rabinnson Private Limited",
-        "time": "2025 - Present"
+        "time": "2025 - 2026"
       },
       {
         "role": "Full-Stack Developer, Edu-SaaS",
